@@ -1,0 +1,188 @@
+
+
+// MARK: - Tests
+//XCTAssertEqual(volume([]), 0)
+//XCTAssertEqual(volume([0]), 0)
+//XCTAssertEqual(volume([0,0,0,0]), 0)
+//XCTAssertEqual(volume([0,0,1000,0]), 0)
+//XCTAssertEqual(volume([4,4]), 0)
+//XCTAssertEqual(volume([0,0,4,0,0,6,0,0,3,0,5,0,1,0,0,0]), 26)
+
+// MARK: - Helpers
+struct HistogramValue: Comparable {
+    let height: Int
+    let index: Int
+
+    static func == (lhs: HistogramValue, rhs: HistogramValue) -> Bool {
+        return lhs.height == rhs.height
+    }
+
+    static func < (lhs: HistogramValue, rhs: HistogramValue) -> Bool {
+        return lhs.height < rhs.height
+    }
+
+    /// Rhs index > lhs.index
+    static func volume(_ lhs: HistogramValue, _ rhs: HistogramValue, minusValuesIn array: [Int]) -> Int {
+        guard rhs.index >= lhs.index else {
+            return HistogramValue.volume(rhs,lhs, minusValuesIn: array)
+        }
+
+        let distance = rhs.index - lhs.index - 1
+
+        // Two next to each other have no volume
+        guard distance > 0 else { return 0 }
+
+        var volume = distance * Swift.min(lhs.height, rhs.height)
+        for i in (lhs.index+1)..<(rhs.index) {
+            volume -= array[i] // Correct data with bars in between
+        }
+
+        return volume
+    }
+}
+
+class DoubleLinkedList<Value> {
+    class Node<Value> {
+        let value: Value
+
+        var next: Node<Value>?
+        weak var previous: Node<Value>? // no retain cycles now
+
+        init(_ value: Value) {
+            self.value = value
+        }
+    }
+
+    private(set) var head: Node<Value>?
+    private(set) var tail: Node<Value>?
+
+    init() {
+        // Initialize empty linked list
+    }
+}
+
+extension DoubleLinkedList {
+    /// Inserts at the beginning of the list
+    func insert(_ value: Value) {
+        // Swap
+        let oldHead = self.head
+        self.head = Node(value)
+        // Link
+        self.head?.next = oldHead
+        oldHead?.previous = self.head
+        // Special case for empty list
+        self.tail = self.tail ?? self.head
+    }
+
+    /// Appends to the end of the list
+    func append(_ value: Value) {
+        // Swap
+        let oldTail = self.tail
+        self.tail = Node(value)
+        // Link
+        oldTail?.next = self.tail
+        self.tail?.previous = oldTail
+        // Special case for empty list
+        self.head = self.head ?? self.tail
+    }
+
+    func trimLast(_ n: Int = 1) {
+        guard n > 0 else { return }
+
+        for _ in 1...n {
+            self.tail = self.tail?.previous
+            self.tail?.next = nil
+        }
+
+        self.head = tail == nil ? nil : self.head
+    }
+
+    func trimFirst(_ n: Int = 1) {
+        guard n > 0 else { return }
+
+        for _ in 1...n {
+            self.head = self.head?.next
+            self.head?.previous = nil
+        }
+
+        self.tail = head == nil ? nil : self.tail
+    }
+}
+
+extension DoubleLinkedList.Node {
+    func delete() {
+        let previous = self.previous
+        let next = self.next
+        // Clean self state
+        self.next = nil
+        self.previous = nil
+        // Link
+        previous?.next = next
+        next?.previous = previous
+    }
+}
+
+
+// MARK: - Solution
+func volume(histogram: [Int]) -> Int {
+    guard let firstNonZero = histogram.firstIndex(where: { $0 > 0 }) else { return 0 }
+    guard let lastNonZero = histogram.lastIndex(where: { $0 > 0 }) else { return 0 }
+    guard firstNonZero < lastNonZero else { return 0 }
+
+    let sanitized = histogram[firstNonZero...lastNonZero].map { $0 } // We want array again
+
+    // 1. Build linked list
+    let list = DoubleLinkedList<HistogramValue>()
+    sanitized.enumerated().map {
+        HistogramValue(height: $1, index: $0)
+    }.forEach {
+        list.append($0)
+    }
+
+    // Remove all not providing any value, iterating through all subsequent trios
+    var currentValue = list.head?.next
+    while let current = currentValue, let previous = current.previous, let next = current.next {
+        print("\(current.value.index) : ")
+        // If we are local minimum, or just same as surroundings
+        if current.value.height <= previous.value.height, current.value.height <= next.value.height {
+            print("DELETE at \(current.value.index)")
+            current.delete()
+            currentValue = previous.previous != nil ? previous : next
+        } else {
+            currentValue = next
+        }
+    }
+
+    // We should now have array like 123...Max...421
+    // Iterate all subsequent pairs, computing volume between them, corrected by bars in between
+    var volume = 0
+
+    currentValue = list.head
+    while let current = currentValue, let next = current.next {
+        print(current.value)
+        volume += HistogramValue.volume(current.value, next.value, minusValuesIn: sanitized)
+        currentValue = next
+    }
+
+    return volume
+}
+
+//XCTAssertEqual(volume([]), 0)
+//XCTAssertEqual(volume([0]), 0)
+//XCTAssertEqual(volume([0,0,0,0]), 0)
+//XCTAssertEqual(volume([0,0,1000,0]), 0)
+//XCTAssertEqual(volume([4,4]), 0)
+//XCTAssertEqual(volume([0,0,4,0,0,6,0,0,3,0,5,0,1,0,0,0]), 26)
+
+volume(histogram: [])
+volume(histogram: [0])
+volume(histogram: [0,0,0,0])
+volume(histogram: [0,0,1000,0])
+volume(histogram: [4,4])
+volume(histogram: [1,2,3,4,5,8,12,13,12,11,8,7,6,5,4,3,2])
+volume(histogram: [4,0,4])
+volume(histogram: [4,0,3,1234])
+volume(histogram: [0,0,4,0,0,6,0,0,3,0,5,0,1,0,0,0])
+
+print("====")
+print(#line)

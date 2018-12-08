@@ -1,0 +1,20 @@
+
+func volume(histogram: [Int]) -> Int {
+    let maxToLeft = histogram.reduce(into: [Int]()) { result, element in
+        result.append(Swift.max(element, result.last ?? 0))
+    }
+
+    let maxToRight = histogram.reversed().reduce(into: [Int]()) { result, element in
+        result.append(Swift.max(element, result.last ?? 0))
+    }
+    .reversed().map { $0 }
+
+    let volume = histogram.enumerated().reduce(0) { result, current in
+        let height = Swift.min(maxToLeft[current.offset], maxToRight[current.offset])
+        guard height > current.element else { return result }
+
+        return result + (height - current.element)
+    }
+
+    return volume
+}
