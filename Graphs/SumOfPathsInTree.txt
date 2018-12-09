@@ -1,0 +1,74 @@
+class Tree<T> {
+    class Node<T> {
+        let value: T
+        var left: Node<T>?
+        var right: Node<T>?
+
+        init(_ value: T) {
+            self.value = value
+        }
+    }
+
+    var root: Node<T>?
+
+    init() {
+        // Start new empty tree
+    }
+}
+
+extension Tree where T == Int { // Numeric?
+    func sumOfPaths(with size: T) -> Int {
+        guard let root = root else { return 0 }
+
+        var lookup = [T: Int]()
+
+        return root.sumOfPaths(with: size, current: 0, &lookup)
+    }
+}
+
+extension Tree.Node where T == Int {
+    func sumOfPaths(with size: T, current sum: T, _ lookup: UnsafeMutablePointer<[T: Int]>) -> Int {
+        var total = 0
+        let sum = sum + value
+        let current = sum - size // fill
+
+        if current == 0 {
+            total += 1
+        }
+
+        if let counts = lookup.pointee[current] {
+            total += counts
+        }
+
+        lookup.pointee.increment(at: sum)
+
+        total += left?.sumOfPaths(with: size, current: sum, lookup) ?? 0
+        total += right?.sumOfPaths(with: size, current: sum, lookup) ?? 0
+
+        lookup.pointee.decrement(at: sum)
+
+        return total
+    }
+}
+
+extension Dictionary where Value == Int {
+    subscript (default key: Key) -> Value {
+        return self[key] ?? 0
+    }
+
+    mutating func increment(at key: Key) {
+        if let current = self[key] {
+            self[key] = current + 1
+        } else {
+            self[key] = 1
+        }
+    }
+
+    mutating func decrement(at key: Key) {
+        if let current = self[key], current > 1 {
+            self[key] = current - 1
+        } else {
+            self.removeValue(forKey: key)
+        }
+    }
+}
