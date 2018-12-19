@@ -16,8 +16,6 @@ func multiply(_ lhs: Int, _ rhs: Int) -> Int {
     return half + half + rest
 }
 
-//multiply(3000, 50000)
-
 let bound = 100
 
 for a in 0...bound {

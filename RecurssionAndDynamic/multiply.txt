@@ -1,3 +1,4 @@
+
 extension Int {
     var isEven: Bool {
         let shifted = (self >> 1) << 1
@@ -5,7 +6,7 @@ extension Int {
     }
 }
 
-func multiply(_ lhs: Int, rhs: Int) -> Int {
+func multiply(_ lhs: Int, _ rhs: Int) -> Int {
     guard lhs >= rhs else { return multiply(rhs, lhs) }
     guard rhs > 0 else { return 0 } // throw if below?
 
