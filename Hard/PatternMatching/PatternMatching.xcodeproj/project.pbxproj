@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CC3C718C2205E3540052E7A4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CC3C718B2205E3540052E7A4 /* main.cpp */; };
+		FE34A83F2205FAC2001000CF /* pattern_match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FE34A83D2205FAC2001000CF /* pattern_match.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +26,8 @@
 /* Begin PBXFileReference section */
 		CC3C71882205E3540052E7A4 /* PatternMatching */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PatternMatching; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC3C718B2205E3540052E7A4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		FE34A83D2205FAC2001000CF /* pattern_match.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pattern_match.cpp; sourceTree = "<group>"; };
+		FE34A83E2205FAC2001000CF /* pattern_match.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pattern_match.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,8 @@
 			isa = PBXGroup;
 			children = (
 				CC3C718B2205E3540052E7A4 /* main.cpp */,
+				FE34A83E2205FAC2001000CF /* pattern_match.hpp */,
+				FE34A83D2205FAC2001000CF /* pattern_match.cpp */,
 			);
 			path = PatternMatching;
 			sourceTree = "<group>";
@@ -118,6 +123,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE34A83F2205FAC2001000CF /* pattern_match.cpp in Sources */,
 				CC3C718C2205E3540052E7A4 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
