@@ -7,14 +7,16 @@
 //
 
 #include <iostream>
+#include <set>
 
 struct Card {
     int value;
 };
 
-void shuffle(Card deck[], int size);
-
 using namespace std;
+
+void shuffle(Card deck[], int size);
+set<Card*> draw(Card deck[], int size, int hand);
 
 int main(int argc, const char * argv[]) {
     // insert code here...
@@ -36,6 +38,15 @@ int main(int argc, const char * argv[]) {
         cout << deck[i].value << " ";
     cout << endl;
 
+    int handSize;
+    while (scanf("%d", &handSize)) {
+        set<Card*> hand = draw(deck, size, handSize);
+        for (set<Card*>::iterator it = hand.begin(); it != hand.end(); ++it) {
+            cout << (*it)->value << " ";
+        }
+        cout << endl;
+    }
+
     return 0;
 }
 
@@ -51,4 +62,24 @@ void shuffle(Card deck[], int size) {
         // we start with size - 1
         swap(deck[i], deck[random(0,i)]);
     }
+}
+
+Card* draw(Card deck[], int size) {
+    int index = random(0, size);
+    Card pulled = deck[index];
+    deck[index] = deck[size - 1];
+    deck[size - 1] = pulled;
+    return new Card { .value = pulled.value };
+}
+
+set<Card*> draw(Card deck[], int size, int hand) {
+    set<Card*> set;
+
+    while (hand--) {
+        Card* card = draw(deck, size);
+        set.insert(card);
+        size--;
+    }
+
+    return set;
 }
